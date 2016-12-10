@@ -13,10 +13,6 @@ class Main(Spider):
     index = "https://www.freelancer.com/"
     bids_url = "https://www.freelancer.com/ajax/project/getBids.php?project_id="
 
-    @staticmethod
-    def make_bids_json_request(pid):
-        yield Request(Main.bids_url + pid, callback=Main.parse_bids)
-
     def start_requests(self):
         client = pymongo.MongoClient(self.settings["MONGO_URI"])
         db = client[self.settings["MONGO_DATABASE"]]
@@ -31,7 +27,6 @@ class Main(Spider):
                     continue
 
             yield Request(url, callback=self.parse_project)
-            break
 
     def parse_project(self, response):
         url_node = response.xpath("//meta[@property='al:ios:url']/@content")
@@ -49,6 +44,7 @@ class Main(Spider):
             nname = user_url[(user_url.rindex('/') + 1):user_url.rindex('.')]
 
             user = ActiveUserItem()
+            user["uid"] = int(bid["user"]["id"])
             user["nname"] = nname
 
             yield user

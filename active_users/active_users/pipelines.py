@@ -36,7 +36,7 @@ class MongoPipeline(object):
 
     def process_item(self, item, spider):
         coll = self.db[self.collection_name]
-        if not coll.find_one({"nname": item["nname"]}):
+        if not coll.find_one({"uid": item["uid"]}):
             coll.insert(dict(item))
             return item
         else:

@@ -9,4 +9,5 @@ import scrapy
 
 
 class ActiveUserItem(scrapy.Item):
-    nname = scrapy.Field()  # Normalized name.
+    uid = scrapy.Field()
+    nname = scrapy.Field()  # Normalized name
