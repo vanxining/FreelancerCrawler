@@ -11,10 +11,6 @@ from ..items import ProjectItem
 HOST = "https://www.freelancer.com"
 
 
-def get_page_no(url):
-    return int(url[(url[:-1].rindex('/') + 1):-1])
-
-
 class Main(CrawlSpider):
     name = "freelancer"
     allowed_domains = ["freelancer.com"]
@@ -35,14 +31,11 @@ class Main(CrawlSpider):
 
     @staticmethod
     def parse_directory(response):
-        if get_page_no(response.url) == 1:
-            last_page_node = response.xpath("//span[@id='project_table_last']/a/@href")
-            if len(last_page_node) == 1:
-                last = get_page_no(last_page_node.extract()[0])
-                chunk = response.url[:-3]
-
-                for i in xrange(2, last + 1):
-                    yield Request(url=chunk + "/%d/" % i, callback=Main.parse_directory)
+        next_page_node = response.xpath("//link[@rel='next']/@href")
+        if next_page_node:
+            yield Request(url=next_page_node.extract()[0], callback=Main.parse_directory)
 
         for link in LinkExtractor(allow=HOST + "/projects/.+/.+/$").extract_links(response):
-            print link.url
+            project = ProjectItem()
+            project["url"] = link.url
+            yield project
