@@ -8,34 +8,41 @@ from scrapy.linkextractors import LinkExtractor
 from ..items import ProjectItem
 
 
+HOST = "https://www.freelancer.com"
+
+
+def get_page_no(url):
+    return int(url[(url[:-1].rindex('/') + 1):-1])
+
+
 class Main(CrawlSpider):
     name = "freelancer"
     allowed_domains = ["freelancer.com"]
-    start_urls = ["https://www.freelancer.com/job/"]
-    link_extractor = {
-        "page": LinkExtractor(allow="/bbsdoc,board,\w+\.html$"),
-        "page_down": LinkExtractor(allow="/bbsdoc,board,\w+,page,\d+\.html$"),
-        "content": LinkExtractor(allow="/bbscon,board,\w+,file,M\.\d+\.A\.html$"),
-    }
+    start_urls = [HOST + "/job/"]
 
     def parse(self, response):
-        print response
-        # for link in self.link_extractor["page"].extract_links(response):
-        #     yield Request(url=link.url, callback=self.parse_page)
+        for cat in response.xpath("//li[@class='job-category-set-item']"):
+            title_node = cat.xpath(".//*[@class='job-category-title']/text()")
+            title = title_node.extract()[0].lstrip()
+            if title.startswith("Writing"):
+                break
 
-    # def parse_page(self, response):
-    #     for link in self.link_extractor["page_down"].extract_links(response):
-    #         yield Request(url=link.url, callback=self.parse_page)
+            print(title)
 
-    #     for link in self.link_extractor["content"].extract_links(response):
-    #         yield Request(url=link.url, callback=self.parse_content)
+            for item in cat.xpath(".//a[@id='job_item']/@href"):
+                url = HOST + item.extract() + "1/"
+                yield Request(url=url, callback=Main.parse_directory)
 
-    # def parse_content(self, response):
-    #     bbsItem_loader = ItemLoader(item=BbsItem(), response=response)
-    #     url = str(response.url)
-    #     bbsItem_loader.add_value("url", url)
-    #     bbsItem_loader.add_xpath("forum", self._x_query["forum"])
-    #     bbsItem_loader.add_xpath("poster", self._x_query["poster"])
-    #     bbsItem_loader.add_xpath("content", self._x_query["page_content"])
-    #
-    #     return bbsItem_loader.load_item()
+    @staticmethod
+    def parse_directory(response):
+        if get_page_no(response.url) == 1:
+            last_page_node = response.xpath("//span[@id='project_table_last']/a/@href")
+            if len(last_page_node) == 1:
+                last = get_page_no(last_page_node.extract()[0])
+                chunk = response.url[:-3]
+
+                for i in xrange(2, last + 1):
+                    yield Request(url=chunk + "/%d/" % i, callback=Main.parse_directory)
+
+        for link in LinkExtractor(allow=HOST + "/projects/.+/.+/$").extract_links(response):
+            print link.url
