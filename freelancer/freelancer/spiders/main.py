@@ -24,7 +24,7 @@ class Main(CrawlSpider):
             print(title)
 
             for item in cat.xpath(".//a[@id='job_item']/@href"):
-                url = HOST + item.extract() + "1/"
+                url = HOST + item.extract()
                 yield Request(url=url, callback=Main.parse_directory)
 
     @staticmethod
