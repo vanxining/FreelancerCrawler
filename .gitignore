@@ -1,3 +1,4 @@
 .idea
 *.pyc
+.scrapy
 Thumbs.db
