@@ -42,8 +42,12 @@ class Main(Spider):
         self.client = pymongo.MongoClient(self.settings["MONGO_URI"])
         self.db = self.client[self.settings["MONGO_DATABASE"]]
 
+        users = []
         for user in self.db.active_users.find():
-            Main.params["to_users[]"] = user["uid"]
+            users.append(user["uid"])
+
+        for user in users:
+            Main.params["to_users[]"] = user
             Main.params["offset"] = 0
             pstr = urlencode(Main.params) + '&' + urlencode(Main.params2)
 
