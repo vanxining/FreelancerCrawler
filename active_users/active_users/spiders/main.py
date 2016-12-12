@@ -17,23 +17,12 @@ class Main(Spider):
         client = pymongo.MongoClient(self.settings["MONGO_URI"])
         db = client[self.settings["MONGO_DATABASE"]]
 
-        for project in db.projects.find():
-            url = project["url"]
-            pos = url.rfind('-')
-            if pos != -1:
-                pid = url[(pos + 1):-1]
-                if len(pid) == 8 and pid.isdigit():
-                    yield Request(self.bids_url + pid, callback=self.parse_bids)
-                    continue
+        projects = []
+        for project in db.new_projects.find():
+            projects.append(project["pid"])
 
-            yield Request(url, callback=self.parse_project)
-
-    def parse_project(self, response):
-        url_node = response.xpath("//meta[@property='al:ios:url']/@content")
-        url = url_node.extract()[0]
-        pid = url[(url.rindex('/') + 1):]
-
-        yield Request(self.bids_url + pid, callback=self.parse_bids)
+        for pid in projects:
+            yield Request(self.bids_url + str(pid), callback=self.parse_bids)
 
     @staticmethod
     def parse_bids(response):
