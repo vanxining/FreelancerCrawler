@@ -9,5 +9,5 @@ import scrapy
 
 
 class ProjectItem(scrapy.Item):
+    pid = scrapy.Field()
     url = scrapy.Field()
-    raw_html = scrapy.Field()

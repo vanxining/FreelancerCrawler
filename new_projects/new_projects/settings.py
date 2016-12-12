@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Scrapy settings for freelancer project
+# Scrapy settings for new_projects project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -9,10 +9,10 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'freelancer'
+BOT_NAME = 'new_projects'
 
-SPIDER_MODULES = ['freelancer.spiders']
-NEWSPIDER_MODULE = 'freelancer.spiders'
+SPIDER_MODULES = ['new_projects.spiders']
+NEWSPIDER_MODULE = 'new_projects.spiders'
 
 MONGO_URI = None
 MONGO_DATABASE = 'freelancer'
@@ -46,13 +46,13 @@ USER_AGENT = 'User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    'freelancer.middlewares.MyCustomSpiderMiddleware': 543,
+#    'new_projects.middlewares.MyCustomSpiderMiddleware': 543,
 #}
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    'freelancer.middlewares.MyCustomDownloaderMiddleware': 543,
+#    'new_projects.middlewares.MyCustomDownloaderMiddleware': 543,
 #}
 
 # Enable or disable extensions
@@ -64,7 +64,7 @@ USER_AGENT = 'User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'freelancer.pipelines.MongoPipeline': 300,
+   'new_projects.pipelines.MongoPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

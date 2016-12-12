@@ -10,7 +10,7 @@ HOST = "https://www.freelancer.com"
 
 
 class Main(CrawlSpider):
-    name = "freelancer"
+    name = "new_projects"
     allowed_domains = ["freelancer.com"]
     start_urls = [HOST + "/job/"]
 
