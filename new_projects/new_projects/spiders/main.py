@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
+import json
 
 from scrapy.http import Request
 from scrapy.spiders import CrawlSpider
-from scrapy.linkextractors import LinkExtractor
 from ..items import ProjectItem
 
 
@@ -33,7 +33,17 @@ class Main(CrawlSpider):
         if next_page_node:
             yield Request(url=next_page_node.extract()[0], callback=Main.parse_directory)
 
-        for link in LinkExtractor(allow=HOST + "/projects/.+/.+/$").extract_links(response):
-            project = ProjectItem()
-            project["url"] = link.url
-            yield project
+        beg = response.body.rfind("__export('dataJson', [[")
+        if beg == -1:
+            return
+
+        beg += 21
+        end = response.body.index("]]", beg) + 2
+        root = json.loads(response.body[beg:end])
+
+        for project in root:
+            item = ProjectItem()
+            item["pid"] = project[0]
+            item["url"] = HOST + project[21]
+
+            yield item
