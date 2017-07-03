@@ -19,7 +19,8 @@ class Main(Spider):
 
         projects = []
         for project in db.new_projects.find():
-            projects.append(project["pid"])
+            if "pid" in project:
+                projects.append(project["pid"])
 
         for pid in projects:
             yield Request(self.bids_url + str(pid), callback=self.parse_bids)
